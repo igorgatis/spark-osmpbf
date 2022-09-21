@@ -15,8 +15,8 @@ The differences between `spark-osmpbf` and `spark-osm-datasource` are:
 Include `spark-osmpbf` dependency and write:
 ```scala
 val df = spark.read
-		.format("io.github.igorgatis.spark.osmpbf")
-		.load("path/to/file.pbf")
+    .format("io.github.igorgatis.spark.osmpbf")
+    .load("path/to/file.pbf")
 ```
 
 ## Schema
@@ -55,13 +55,13 @@ also read tags as a map.
 
 ```scala
 val df = spark.read
-		.format(OsmPbfOptions.FORMAT)
-		.options(new OsmPbfOptions
-				.withType("node")
-				.withTagsAsMap(true)
-				.withExcludeMetadata(true)
-				.toMap)
-		.load("path/to/file.pbf")
+   .format(OsmPbfOptions.FORMAT)
+   .options(new OsmPbfOptions
+      .withType("node")
+      .withTagsAsMap(true)
+      .withExcludeMetadata(true)
+      .toMap)
+   .load("path/to/file.pbf")
 
 df.printSchema
 ```
