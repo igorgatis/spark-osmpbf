@@ -1,7 +1,6 @@
 // This software is released into the Public Domain.  See copying.txt for details.
 package io.github.igorgatis.spark.osmpbf;
 
-import crosby.binary.Fileformat;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.URI;
@@ -22,6 +21,7 @@ import org.apache.spark.sql.internal.SQLConf;
 import org.apache.spark.sql.types.StructType;
 import org.apache.spark.sql.util.CaseInsensitiveStringMap;
 import org.apache.spark.util.SerializableConfiguration;
+import org.openstreetmap.osmosis.osmbinary.Fileformat;
 import scala.reflect.ClassTag;
 
 class OsmPbfScan implements Scan, Batch {
@@ -93,7 +93,8 @@ class OsmPbfScan implements Scan, Batch {
     return this.plannedPartitions;
   }
 
-  private void appendPartitions(OsmPbfOptions options, String filePath, ArrayList<OsmPbfPartition> partitions) {
+  private void appendPartitions(OsmPbfOptions options, String filePath,
+      ArrayList<OsmPbfPartition> partitions) {
     FSDataInputStream dis = null;
     try {
       Path path = new Path(new URI(filePath));

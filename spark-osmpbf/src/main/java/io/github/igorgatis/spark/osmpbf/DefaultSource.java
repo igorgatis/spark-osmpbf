@@ -1,6 +1,10 @@
 // This software is released into the Public Domain.  See copying.txt for details.
 package io.github.igorgatis.spark.osmpbf;
 
+import io.github.igorgatis.spark.osmpbf.OsmPbfOptions.Columns;
+import io.github.igorgatis.spark.osmpbf.OsmPbfOptions.Columns.RelationFields;
+import io.github.igorgatis.spark.osmpbf.OsmPbfOptions.Columns.TagFields;
+import io.github.igorgatis.spark.osmpbf.OsmPbfOptions.Columns.WayFields;
 import java.util.ArrayList;
 import java.util.Map;
 import org.apache.spark.sql.SparkSession;
@@ -15,10 +19,6 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import org.apache.spark.sql.util.CaseInsensitiveStringMap;
 import org.openstreetmap.osmosis.core.domain.v0_6.EntityType;
-import io.github.igorgatis.spark.osmpbf.OsmPbfOptions.Columns;
-import io.github.igorgatis.spark.osmpbf.OsmPbfOptions.Columns.RelationFields;
-import io.github.igorgatis.spark.osmpbf.OsmPbfOptions.Columns.TagFields;
-import io.github.igorgatis.spark.osmpbf.OsmPbfOptions.Columns.WayFields;
 
 public class DefaultSource implements TableProvider {
 

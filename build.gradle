@@ -20,6 +20,7 @@ def javaProjects = subprojects.findAll { project -> !packageProjects.contains(pr
 
 // Apply common project configuration
 subprojects {
+	apply plugin: 'eclipse-wtp'
 	apply plugin: 'idea'
 
 	// All projects use a common group id.

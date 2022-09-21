@@ -1,6 +1,7 @@
 // This software is released into the Public Domain.  See copying.txt for details.
 package io.github.igorgatis.spark.osmpbf;
 
+import io.github.igorgatis.spark.osmpbf.OsmPbfOptions.Columns;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,7 +25,6 @@ import org.openstreetmap.osmosis.core.domain.v0_6.Tag;
 import org.openstreetmap.osmosis.core.domain.v0_6.Way;
 import org.openstreetmap.osmosis.core.domain.v0_6.WayNode;
 import org.openstreetmap.osmosis.pbf2.v0_6.impl.PbfBlobDecoderListener;
-import io.github.igorgatis.spark.osmpbf.OsmPbfOptions.Columns;
 
 class OsmPbfDecoderQueue implements PbfBlobDecoderListener, Iterator<InternalRow> {
 
