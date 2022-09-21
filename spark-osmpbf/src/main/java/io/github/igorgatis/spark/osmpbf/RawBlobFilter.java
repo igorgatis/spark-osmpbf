@@ -6,14 +6,14 @@ import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.UnknownFieldSet;
 import com.google.protobuf.UnknownFieldSet.Field;
 import com.google.protobuf.WireFormat;
-import crosby.binary.Fileformat;
-import crosby.binary.Osmformat.PrimitiveBlock;
-import crosby.binary.Osmformat.PrimitiveGroup;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.zip.InflaterInputStream;
 import org.openstreetmap.osmosis.core.OsmosisRuntimeException;
 import org.openstreetmap.osmosis.core.domain.v0_6.EntityType;
+import org.openstreetmap.osmosis.osmbinary.Fileformat;
+import org.openstreetmap.osmosis.osmbinary.Osmformat.PrimitiveBlock;
+import org.openstreetmap.osmosis.osmbinary.Osmformat.PrimitiveGroup;
 import org.openstreetmap.osmosis.pbf2.v0_6.impl.RawBlob;
 
 class RawBlobFilter {
