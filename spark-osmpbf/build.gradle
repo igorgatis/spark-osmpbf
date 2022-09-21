@@ -1,0 +1,27 @@
+configurations {
+    includeInJar {
+      transitive = false
+    }
+}
+
+dependencies {
+    includeInJar group: 'org.openstreetmap.osmosis', name: 'osmosis-core', version: dependencyVersionOsmosis
+    includeInJar group: 'org.openstreetmap.osmosis', name: 'osmosis-pbf', version: dependencyVersionOsmosis
+    includeInJar group: 'org.openstreetmap.osmosis', name: 'osmosis-pbf2', version: dependencyVersionOsmosis
+    includeInJar group: 'org.openstreetmap.pbf', name: 'osmpbf', version: dependencyVersionOsmPbf
+    implementation group: 'org.apache.spark', name: 'spark-core_2.12', version: dependencyVersionSpark
+    implementation group: 'org.apache.spark', name: 'spark-sql_2.12', version: dependencyVersionSpark
+    implementation group: 'com.google.guava', name: 'guava', version: dependencyVersionGuava
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: dependencyVersionProtobuf
+    implementation group: 'commons-io', name: 'commons-io', version: dependencyVersionCommonsIo
+
+    configurations.implementation.extendsFrom(configurations.includeInJar)
+}
+
+task fatjar(type: Jar) {
+    archiveAppendix = 'fatjar'
+    from {
+        configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}

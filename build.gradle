@@ -1,0 +1,133 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		jcenter()
+	}
+	dependencies {
+		classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
+	}
+}
+
+apply plugin: 'idea'
+
+/* Build collections containing each type of project.  These collections will
+ * be used to apply common configurations to projects of the same type.
+ */
+def packageProjects = allprojects.findAll { project -> project.path.equals(':package') }
+def buildProjects = allprojects.findAll { project -> project.path.equals(':build-support') }
+// Java projects are all those that aren't in the previous collections.
+def javaProjects = subprojects.findAll { project -> !packageProjects.contains(project) && !buildProjects.contains(project) }
+
+// Apply common project configuration
+subprojects {
+	apply plugin: 'idea'
+
+	// All projects use a common group id.
+	group = 'io.github.igorgatis.spark.osmpbf'
+
+	// Load the project version dynamically from Git.  For release builds, don't add a suffix.
+	def versionSuffix = "RELEASE".equals(settingsBuildType) ? '' : '-' + settingsBuildType
+	version = 'git describe --always --dirty'.execute().in.text.trim() + versionSuffix
+
+	// Enable access to artefact dependency repositories.
+	repositories {
+		// Standard Maven repository.
+		mavenCentral()
+	}
+}
+
+// Apply common configurations to all projects supporting Java.
+configure(javaProjects) {
+	apply plugin: 'checkstyle'
+	apply plugin: 'java'
+	apply plugin: 'maven-publish'
+	apply plugin: 'signing'
+	apply plugin: 'com.github.johnrengelman.shadow'
+
+	sourceCompatibility = 1.8
+
+	dependencies {
+		testImplementation group: 'junit', name: 'junit', version: dependencyVersionJunit
+	}
+
+	checkstyle {
+		configFile = new File(rootDir, 'build-support/checkstyle.xml')
+		configProperties.samedir = configFile.parentFile
+	}
+
+	// Build javadoc and source jars and include in published artifacts.
+	task javadocJar(type: Jar, dependsOn: javadoc) {
+		classifier = 'javadoc'
+		from 'build/docs/javadoc'
+	}
+	task sourcesJar(type: Jar) {
+		from sourceSets.main.allSource
+		classifier = 'sources'
+	}
+	artifacts {
+	    archives jar
+
+	    archives javadocJar
+	    archives sourcesJar
+	}
+
+	shadowJar {
+		archiveBaseName = project.name
+		mergeServiceFiles()
+		transform(com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer) {
+			resource = 'reference.conf'
+		}
+		zip64 = true
+	}
+
+	// Sign all published artifacts if signing is enabled.
+	signing {
+		sign configurations.archives
+		required = Boolean.valueOf(settingsSigningEnabled)
+	}
+
+	// Configure the maven-publish plugin to upload artifacts to the Sonatype repository.
+	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+				pom {
+					name = project.name
+					packaging = 'jar'
+					description = 'Spark data source for OpenStreetMap Protobuf files.'
+          url = 'https://github.com/igorgatis/spark-osmpbf'
+
+					scm {
+						connection = 'scm:git:git://github.com/igorgatis/spark-osmpbf.git'
+						developerConnection = 'scm:git:ssh://git@github.com/igorgatis/spark-osmpbf.git'
+						url = 'https://github.com/igorgatis/spark-osmpbf'
+					}
+
+					licenses {
+						license {
+							name = 'Public Domain'
+						}
+					}
+
+					developers {
+						developer {
+							id = 'igorgatis'
+							name = 'Igor Gatis'
+							email = 'igorgatis@gmail.com'
+						}
+					}
+				}
+			}
+		}
+		repositories {
+			maven {
+				def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+				def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+				url = "RELEASE".equals(settingsBuildType) ? releasesRepoUrl : snapshotsRepoUrl
+				credentials {
+					username sonatypeUsername
+					password sonatypePassword
+				}
+			}
+		}
+	}
+}
