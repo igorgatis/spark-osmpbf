@@ -33,7 +33,7 @@ public class DefaultSource implements TableProvider {
     return new OsmPbfTable(SparkSession.active(), new CaseInsensitiveStringMap(properties), schema);
   }
 
-  private static StructType getSchema(OsmPbfOptions options) {
+  static StructType getSchema(OsmPbfOptions options) {
     ArrayList<StructField> fields = new ArrayList<>();
 
     Metadata noMeta = Metadata.empty();

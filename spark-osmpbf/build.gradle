@@ -1,3 +1,8 @@
+plugins {
+  id 'java'
+  id 'me.champeau.jmh' version '0.6.8'
+}
+
 configurations {
     includeInJar {
       transitive = false
@@ -10,10 +15,13 @@ dependencies {
     includeInJar group: 'org.openstreetmap.osmosis', name: 'osmosis-pbf', version: dependencyVersionOsmosis
     includeInJar group: 'org.openstreetmap.osmosis', name: 'osmosis-pbf2', version: dependencyVersionOsmosis
     includeInJar group: 'org.openstreetmap.osmosis', name: 'osmosis-osm-binary', version: dependencyVersionOsmosis
+
     implementation group: 'com.google.guava', name: 'guava', version: dependencyVersionGuava
     implementation group: 'commons-io', name: 'commons-io', version: dependencyVersionCommonsIo
     implementation group: 'org.apache.spark', name: 'spark-core_2.12', version: dependencyVersionSpark
     implementation group: 'org.apache.spark', name: 'spark-sql_2.12', version: dependencyVersionSpark
+
+    jmh group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: dependencyVersionJmh
 
     configurations.implementation.extendsFrom(configurations.includeInJar)
 }
@@ -25,4 +33,8 @@ task fatjar(type: Jar) {
         configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
     }
     with jar
+}
+
+jmh {
+  jmhVersion = dependencyVersionJmh
 }

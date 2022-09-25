@@ -1,15 +1,15 @@
 # spark-osmpbf
-Spark Data Source for OpenStreetMap Protobuf (aka OSM PBF) files.
+Spark Data Source for OpenStreetMap Protobuf (aka [OSM PBF](https://wiki.openstreetmap.org/wiki/PBF_Format)) files.
 
 This library was heavily inspired by:
-* https://github.com/woltapp/spark-osm-datasource
-* https://github.com/adrianulbona/osm-parquetizer
-* https://github.com/openstreetmap/osmosis
+* [spark-osm-datasource](https://github.com/woltapp/spark-osm-datasource)
+* [osm-parquetizer](https://github.com/adrianulbona/osm-parquetizer)
+* [Osmosis](https://github.com/openstreetmap/osmosis)
 
-The differences between `spark-osmpbf` and `spark-osm-datasource` are:
+The main differences between `spark-osmpbf` and `spark-osm-datasource` are:
 * `spark-osmpbf` processes the input in the main thread while
-`spark-osm-datasource` is multhireaded.
-* `spark-osmpbf` applies early stage filtering based on selected entities.
+`spark-osm-datasource` is multithreaded.
+* `spark-osmpbf` applies early stage filtering based on selected OSM entities.
 
 ## Usage
 Include `spark-osmpbf` dependency and write:
@@ -20,8 +20,8 @@ val df = spark.read
 ```
 
 ## Schema
-`spark-osmpbf`'s schema was based on `osm-parquetizer`. It includes an
-extra `entity_type` string field which is self-explanatory:
+The `spark-osmpbf` default schema was based on `osm-parquetizer`. It includes
+an extra `entity_type` string field which is self-explanatory:
 
 ```
 root

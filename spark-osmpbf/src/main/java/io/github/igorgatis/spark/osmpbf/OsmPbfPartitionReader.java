@@ -4,6 +4,8 @@ package io.github.igorgatis.spark.osmpbf;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Iterator;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -11,7 +13,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.spark.sql.catalyst.InternalRow;
 import org.apache.spark.sql.connector.read.PartitionReader;
 import org.apache.spark.util.SerializableConfiguration;
-import org.openstreetmap.osmosis.pbf2.v0_6.impl.PbfBlobDecoder;
 import org.openstreetmap.osmosis.pbf2.v0_6.impl.RawBlob;
 import org.openstreetmap.osmosis.pbf2.v0_6.impl.StreamSplitter;
 
@@ -22,16 +23,19 @@ class OsmPbfPartitionReader implements PartitionReader<InternalRow> {
   private final SerializableConfiguration configuration;
   private final OsmPbfPartition partition;
 
-  private final RawBlobFilter filter;
-  private final OsmPbfDecoderQueue queue;
+  private Iterator<InternalRow> queue;
+
+  private final RawBlobParser parser;
   private FSDataInputStream stream;
   private StreamSplitter streamSplitter;
 
   OsmPbfPartitionReader(SerializableConfiguration configuration, OsmPbfPartition partition) {
     this.configuration = configuration;
     this.partition = partition;
-    this.filter = new RawBlobFilter(partition.types);
-    this.queue = new OsmPbfDecoderQueue(partition);
+    this.queue = Collections.emptyIterator();
+    RowConverter converter = new RowConverter(
+        partition.schema, partition.filePath, partition.tagsAsMap, partition.wayNodesAsIdList);
+    this.parser = new RawBlobParser(partition.types, converter);
   }
 
   private void openFile() throws IOException {
@@ -69,8 +73,7 @@ class OsmPbfPartitionReader implements PartitionReader<InternalRow> {
       while (streamSplitter.hasNext()) {
         RawBlob blob = streamSplitter.next();
         if (blob.getType().equalsIgnoreCase(PRIMITIVE_TYPE)) {
-          blob = filter.filterPrimitiveBlob(blob);
-          new PbfBlobDecoder(blob, queue).run();
+          queue = parser.parse(blob.getData());
           if (queue.hasNext()) {
             break;
           }

@@ -1,17 +1,14 @@
 // This software is released into the Public Domain.  See copying.txt for details.
 package io.github.igorgatis.spark.osmpbf;
 
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-
 
 public final class Main {
 
   private Main() {
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     SparkSession spark = SparkSession
         .builder()
         .appName("spark-osmpbf")
@@ -19,16 +16,18 @@ public final class Main {
         .config("spark.executor.memory", "4gb")
         .getOrCreate();
 
-    Dataset<Row> df = spark.read()
+    spark.sparkContext().setLogLevel("ERROR");
+
+    spark.read()
         .format(OsmPbfOptions.FORMAT)
-        .options(new OsmPbfOptions()
-            .withTagsAsMap(true)
-            .withExcludeMetadata(true)
-            .toMap())
-        .load("spark-osmpbf/src/test/resources/sample.pbf");
+        .options(new OsmPbfOptions().toMap())
+        .load("spark-osmpbf/src/test/resources/sample.pbf")
+        .groupBy("entity_type").count().show();
 
-    df.printSchema();
-
-    df.groupBy("entity_type").count().show();
+    spark.read()
+        .format(OsmPbfOptions.FORMAT)
+        .options(new OsmPbfOptions().toMap())
+        .load("spark-osmpbf/src/test/resources/district-of-columbia-latest.osm.pbf")
+        .groupBy("entity_type").count().show();
   }
 }
