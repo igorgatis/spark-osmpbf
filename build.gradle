@@ -24,7 +24,7 @@ subprojects {
 	apply plugin: 'idea'
 
 	// All projects use a common group id.
-	group = 'io.github.igorgatis.spark.osmpbf'
+	group = 'io.github.igorgatis'
 
 	// Load the project version dynamically from Git.  For release builds, don't add a suffix.
 	def versionSuffix = "RELEASE".equals(settingsBuildType) ? '' : '-' + settingsBuildType
