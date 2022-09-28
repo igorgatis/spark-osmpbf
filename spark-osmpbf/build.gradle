@@ -29,6 +29,7 @@ dependencies {
 task fatjar(type: Jar) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveAppendix = 'fatjar'
+    destinationDirectory.set(file("$buildDir/fatjars"))
     from {
         configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
     }
@@ -37,4 +38,8 @@ task fatjar(type: Jar) {
 
 jmh {
   jmhVersion = dependencyVersionJmh
+}
+
+artifacts {
+  archives fatjar
 }

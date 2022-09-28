@@ -13,10 +13,9 @@ apply plugin: 'idea'
 /* Build collections containing each type of project.  These collections will
  * be used to apply common configurations to projects of the same type.
  */
-def packageProjects = allprojects.findAll { project -> project.path.equals(':package') }
 def buildProjects = allprojects.findAll { project -> project.path.equals(':build-support') }
 // Java projects are all those that aren't in the previous collections.
-def javaProjects = subprojects.findAll { project -> !packageProjects.contains(project) && !buildProjects.contains(project) }
+def javaProjects = subprojects.findAll { project -> !buildProjects.contains(project) }
 
 // Apply common project configuration
 subprojects {
@@ -28,7 +27,7 @@ subprojects {
 
 	// Load the project version dynamically from Git.  For release builds, don't add a suffix.
 	def versionSuffix = "RELEASE".equals(settingsBuildType) ? '' : '-' + settingsBuildType
-	version = 'git describe --always --dirty'.execute().in.text.trim() + versionSuffix
+	version = 'git describe --always --dirty --tags'.execute().in.text.trim() + versionSuffix
 
 	// Enable access to artefact dependency repositories.
 	repositories {
@@ -91,11 +90,12 @@ configure(javaProjects) {
 	publishing {
 		publications {
 			mavenJava(MavenPublication) {
+				from components.java
 				pom {
 					name = project.name
 					packaging = 'jar'
 					description = 'Spark data source for OpenStreetMap Protobuf files.'
-          url = 'https://github.com/igorgatis/spark-osmpbf'
+					url = 'https://github.com/igorgatis/spark-osmpbf'
 
 					scm {
 						connection = 'scm:git:git://github.com/igorgatis/spark-osmpbf.git'

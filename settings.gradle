@@ -1,3 +1,2 @@
 include 'build-support'
 include 'spark-osmpbf'
-include 'package'
