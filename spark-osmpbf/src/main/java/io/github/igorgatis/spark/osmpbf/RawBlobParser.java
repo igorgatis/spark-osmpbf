@@ -1,7 +1,6 @@
 // This software is released into the Public Domain.  See copying.txt for details.
 package io.github.igorgatis.spark.osmpbf;
 
-import com.google.protobuf.ByteStringWrapper;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.ExtensionRegistryLite;
 import com.google.protobuf.WireFormat;
@@ -44,7 +43,7 @@ class RawBlobParser {
   }
 
   public Iterator<InternalRow> parse(byte[] blobBytes) {
-    CodedInputStream input = ByteStringWrapper.wrap(blobBytes).newCodedInput();
+    CodedInputStream input = CodedInputStream.newInstance(blobBytes);
     input.enableAliasing(true);
 
     ListSink sink = new ListSink();
