@@ -1,4 +1,5 @@
 plugins {
+  id 'com.github.johnrengelman.shadow' version '7.1.2'
   id 'java'
   id 'me.champeau.jmh' version '0.6.8'
 }
@@ -26,20 +27,16 @@ dependencies {
     configurations.implementation.extendsFrom(configurations.includeInJar)
 }
 
-task fatjar(type: Jar) {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archiveAppendix = 'fatjar'
-    destinationDirectory.set(file("$buildDir/fatjars"))
-    from {
-        configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    with jar
-}
-
 jmh {
   jmhVersion = dependencyVersionJmh
 }
 
+shadowJar {
+  archiveAppendix = 'fatjar'
+  relocate('com.google.protobuf', 'io.github.igorgatis.spark.osmpbf.com.google.protobuf')
+  configurations = [project.configurations.includeInJar]
+}
+
 artifacts {
-  archives fatjar
+  archives shadowJar
 }
